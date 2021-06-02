@@ -1,0 +1,14 @@
+{
+    "port":9977,
+    "urls":[
+        {"url":"kubernetes.docker.internal","port":443},
+        {"url":"api.growingio.com","port":443},
+        {"url":"script.hotjar.com","port":443},
+        {"url":"api.growingio.com","port":443},
+        {"url":"insights.hotjar.com","port":443},
+        {"url":"ws3.hotjar.com","port":443},
+        {"url":"vars.hotjar.com","port":443},
+        {"url":"sp0.baidu.com","port":443},
+        {"url":"hm.baidu.com","port":443}
+    ]
+}
