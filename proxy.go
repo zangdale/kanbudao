@@ -23,6 +23,12 @@ var _ http.Handler = &Proxy{}
 
 // HeaderProxy http 代理
 func (p *Proxy) ServeHTTP(rw http.ResponseWriter, req *http.Request) {
+	defer func() {
+		if msg := recover(); msg != nil {
+			log.Println("ServeHTTP: ", msg)
+		}
+	}()
+
 	if req.URL.Host == "" {
 		req.URL.Host = req.Host
 	}
@@ -40,13 +46,25 @@ func (p *Proxy) ServeHTTP(rw http.ResponseWriter, req *http.Request) {
 		}
 	}
 
+	var forwardF = p.forwardHTTP
 	switch {
 	case req.Method == http.MethodConnect:
-		p.forwardTunnel(p.Ctx, req, rw)
-	default:
-		p.forwardHTTP(p.Ctx, req, rw)
+		forwardF = p.forwardTunnel
+		// default:
 	}
 
+	forwardDo(p.Ctx, req, rw, forwardF)
+}
+
+type forwardFunc func(ctx context.Context, req *http.Request, rw http.ResponseWriter)
+
+func forwardDo(ctx context.Context, req *http.Request, rw http.ResponseWriter, f forwardFunc) {
+	defer func() {
+		if msg := recover(); msg != nil {
+			log.Println("forwardDo: ", msg)
+		}
+	}()
+	f(ctx, req, rw)
 }
 
 // forwardTunnel 隧道转发
